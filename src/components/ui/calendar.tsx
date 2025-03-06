@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker, CaptionProps } from "react-day-picker";
+import { DayPicker, CaptioniDropdown } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -11,14 +11,12 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 type ViewMode = "days" | "months" | "years";
 
-function CustomCaption({
-  displayMonth,
-  goToMonth,
-  nextMonth,
-  previousMonth,
-}: CaptionProps) {
+function CustomCaption(props: React.PropsWithChildren<{
+  displayMonth: Date;
+  onChange?: (date: Date) => void;
+}>) {
   const [viewMode, setViewMode] = React.useState<ViewMode>("days");
-  const [selectedYear, setSelectedYear] = React.useState<number>(displayMonth.getFullYear());
+  const [selectedYear, setSelectedYear] = React.useState<number>(props.displayMonth.getFullYear());
   const years = React.useMemo(() => {
     const currentYear = new Date().getFullYear();
     return Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
@@ -51,13 +49,25 @@ function CustomCaption({
 
   const handleMonthSelect = (monthIndex: number) => {
     const newDate = new Date(selectedYear, monthIndex, 1);
-    goToMonth(newDate);
+    props.onChange?.(newDate);
     setViewMode("days");
   };
 
   const handleYearSelect = (year: number) => {
     setSelectedYear(year);
     setViewMode("months");
+  };
+
+  const handlePreviousMonth = () => {
+    const previousMonth = new Date(props.displayMonth);
+    previousMonth.setMonth(previousMonth.getMonth() - 1);
+    props.onChange?.(previousMonth);
+  };
+
+  const handleNextMonth = () => {
+    const nextMonth = new Date(props.displayMonth);
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    props.onChange?.(nextMonth);
   };
 
   return (
@@ -68,13 +78,13 @@ function CustomCaption({
             className="text-sm font-medium cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors"
             onClick={handleViewChange}
           >
-            {displayMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
+            {props.displayMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
           </div>
           <div className="space-x-1 flex items-center absolute left-1">
             <motion.div
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.9 }}
-              onClick={() => previousMonth && goToMonth(previousMonth)}
+              onClick={handlePreviousMonth}
               className={cn(
                 buttonVariants({ variant: "outline" }),
                 "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
@@ -87,7 +97,7 @@ function CustomCaption({
             <motion.div
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.9 }}
-              onClick={() => nextMonth && goToMonth(nextMonth)}
+              onClick={handleNextMonth}
               className={cn(
                 buttonVariants({ variant: "outline" }),
                 "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
@@ -170,10 +180,12 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+  const [month, setMonth] = React.useState<Date>(props.month || new Date());
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={props.month ? props.month.toString() : "calendar"}
+        key={month.toString()}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
@@ -210,10 +222,15 @@ function Calendar({
             day_hidden: "invisible",
             ...classNames,
           }}
-          captionLayout="custom"
           components={{
-            Caption: CustomCaption
+            Caption: ({ displayMonth }) => 
+              <CustomCaption 
+                displayMonth={displayMonth} 
+                onChange={setMonth} 
+              />
           }}
+          month={month}
+          onMonthChange={setMonth}
           {...props}
         />
       </motion.div>
