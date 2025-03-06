@@ -1,29 +1,30 @@
+export type IncomeFrequency = "Daily" | "Weekly" | "Monthly" | "Yearly" | "One-time";
 
-export type Category = 
-  | 'Housing'
-  | 'Transportation'
-  | 'Food'
-  | 'Utilities'
-  | 'Healthcare'
-  | 'Insurance'
-  | 'Entertainment'
-  | 'Shopping'
-  | 'Personal'
-  | 'Debt'
-  | 'Savings'
-  | 'Investments'
-  | 'Education'
-  | 'Gifts/Donations'
-  | 'Travel'
-  | 'Other';
+export type Category =
+  | "Housing"
+  | "Transportation"
+  | "Food"
+  | "Utilities"
+  | "Healthcare"
+  | "Insurance"
+  | "Entertainment"
+  | "Shopping"
+  | "Personal"
+  | "Debt"
+  | "Savings"
+  | "Investments"
+  | "Education"
+  | "Gifts/Donations"
+  | "Travel"
+  | "Other";
 
-export type IncomeCategory = 
-  | 'Salary'
-  | 'Freelance'
-  | 'Business'
-  | 'Investments'
-  | 'Gifts'
-  | 'Other';
+export type IncomeCategory =
+  | "Salary"
+  | "Freelance"
+  | "Business"
+  | "Investments"
+  | "Gifts"
+  | "Other";
 
 export interface ExpenseItem {
   id: string;
@@ -37,6 +38,7 @@ export interface IncomeItem {
   id: string;
   amount: number;
   category: IncomeCategory;
+  frequency: IncomeFrequency;
   description: string;
   date: Date;
 }

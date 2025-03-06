@@ -1,13 +1,168 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, CaptionProps } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+
+type ViewMode = "days" | "months" | "years";
+
+function CustomCaption({
+  displayMonth,
+  goToMonth,
+  nextMonth,
+  previousMonth,
+}: CaptionProps) {
+  const [viewMode, setViewMode] = React.useState<ViewMode>("days");
+  const [selectedYear, setSelectedYear] = React.useState<number>(displayMonth.getFullYear());
+  const years = React.useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
+  }, []);
+
+  const months = React.useMemo(() => [
+    { name: "January", value: 0 },
+    { name: "February", value: 1 },
+    { name: "March", value: 2 },
+    { name: "April", value: 3 },
+    { name: "May", value: 4 },
+    { name: "June", value: 5 },
+    { name: "July", value: 6 },
+    { name: "August", value: 7 },
+    { name: "September", value: 8 },
+    { name: "October", value: 9 },
+    { name: "November", value: 10 },
+    { name: "December", value: 11 },
+  ], []);
+
+  const handleViewChange = () => {
+    if (viewMode === "days") {
+      setViewMode("months");
+    } else if (viewMode === "months") {
+      setViewMode("years");
+    } else {
+      setViewMode("days");
+    }
+  };
+
+  const handleMonthSelect = (monthIndex: number) => {
+    const newDate = new Date(selectedYear, monthIndex, 1);
+    goToMonth(newDate);
+    setViewMode("days");
+  };
+
+  const handleYearSelect = (year: number) => {
+    setSelectedYear(year);
+    setViewMode("months");
+  };
+
+  return (
+    <div className="flex justify-center pt-1 relative items-center">
+      {viewMode === "days" && (
+        <>
+          <div 
+            className="text-sm font-medium cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors"
+            onClick={handleViewChange}
+          >
+            {displayMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
+          </div>
+          <div className="space-x-1 flex items-center absolute left-1">
+            <motion.div
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => previousMonth && goToMonth(previousMonth)}
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
+              )}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </motion.div>
+          </div>
+          <div className="space-x-1 flex items-center absolute right-1">
+            <motion.div
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => nextMonth && goToMonth(nextMonth)}
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
+              )}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </motion.div>
+          </div>
+        </>
+      )}
+
+      {viewMode === "months" && (
+        <>
+          <div 
+            className="text-sm font-medium cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors"
+            onClick={handleViewChange}
+          >
+            {selectedYear}
+          </div>
+        </>
+      )}
+
+      {viewMode === "years" && (
+        <>
+          <div 
+            className="text-sm font-medium cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors"
+            onClick={handleViewChange}
+          >
+            Years
+          </div>
+        </>
+      )}
+
+      <AnimatePresence mode="wait">
+        {viewMode === "months" && (
+          <motion.div 
+            className="absolute top-10 left-0 right-0 bg-background border rounded-md z-10 p-2 grid grid-cols-3 gap-1"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            {months.map((month) => (
+              <div
+                key={month.value}
+                className="text-center py-1 px-2 cursor-pointer hover:bg-accent rounded"
+                onClick={() => handleMonthSelect(month.value)}
+              >
+                {month.name.substring(0, 3)}
+              </div>
+            ))}
+          </motion.div>
+        )}
+
+        {viewMode === "years" && (
+          <motion.div 
+            className="absolute top-10 left-0 right-0 bg-background border rounded-md z-10 p-2 grid grid-cols-3 gap-1"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            {years.map((year) => (
+              <div
+                key={year}
+                className="text-center py-1 px-2 cursor-pointer hover:bg-accent rounded"
+                onClick={() => handleYearSelect(year)}
+              >
+                {year}
+              </div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 function Calendar({
   className,
@@ -31,14 +186,8 @@ function Calendar({
             months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
             month: "space-y-4",
             caption: "flex justify-center pt-1 relative items-center",
-            caption_label: "text-sm font-medium cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 transition-colors",
-            nav: "space-x-1 flex items-center",
-            nav_button: cn(
-              buttonVariants({ variant: "outline" }),
-              "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 transition-opacity"
-            ),
-            nav_button_previous: "absolute left-1",
-            nav_button_next: "absolute right-1",
+            caption_label: "hidden", // Hide the default caption
+            nav: "hidden", // Hide the default navigation
             table: "w-full border-collapse space-y-1",
             head_row: "flex",
             head_cell:
@@ -61,23 +210,9 @@ function Calendar({
             day_hidden: "invisible",
             ...classNames,
           }}
+          captionLayout="custom"
           components={{
-            IconLeft: ({ ..._props }) => (
-              <motion.div
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </motion.div>
-            ),
-            IconRight: ({ ..._props }) => (
-              <motion.div
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </motion.div>
-            ),
+            Caption: CustomCaption
           }}
           {...props}
         />

@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { IncomeCategory, IncomeItem } from "@/types/finance";
+import { IncomeCategory, IncomeItem, IncomeFrequency } from "@/types/finance";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -33,10 +33,19 @@ const incomeCategories: IncomeCategory[] = [
   "Other",
 ];
 
+const incomeFrequencies: IncomeFrequency[] = [
+  "Daily",
+  "Weekly",
+  "Monthly",
+  "Yearly",
+  "One-time",
+];
+
 const IncomeForm: React.FC<IncomeFormProps> = ({ onAddIncome }) => {
   const [amount, setAmount] = useState<string>("");
   const [displayAmount, setDisplayAmount] = useState<string>("0.00");
   const [category, setCategory] = useState<IncomeCategory>("Salary");
+  const [frequency, setFrequency] = useState<IncomeFrequency>("Monthly");
   const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
@@ -76,6 +85,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ onAddIncome }) => {
       id: uuidv4(),
       amount: parseFloat(amount),
       category,
+      frequency,
       description,
       date,
     };
@@ -87,6 +97,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ onAddIncome }) => {
     setAmount("");
     setDisplayAmount("0.00");
     setCategory("Salary");
+    setFrequency("Monthly");
     setDescription("");
     setDate(new Date());
     setIsFormOpen(false);
@@ -171,6 +182,24 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ onAddIncome }) => {
                 </Select>
               </div>
               <div className="space-y-2">
+                <Label htmlFor="frequency">Frequency</Label>
+                <Select 
+                  value={frequency} 
+                  onValueChange={(value) => setFrequency(value as IncomeFrequency)}
+                >
+                  <SelectTrigger id="frequency">
+                    <SelectValue placeholder="Select frequency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {incomeFrequencies.map((freq) => (
+                      <SelectItem key={freq} value={freq}>
+                        {freq}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
                 <Input
                   id="description"
@@ -200,7 +229,6 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ onAddIncome }) => {
                       selected={date}
                       onSelect={(date) => date && setDate(date)}
                       initialFocus
-                      captionLayout="dropdown-buttons"
                       fromYear={2020}
                       toYear={2030}
                     />
