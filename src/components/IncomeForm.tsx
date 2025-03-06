@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +13,7 @@ import {
 import { IncomeCategory, IncomeItem } from "@/types/finance";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { CalendarIcon, PlusIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
@@ -35,10 +35,34 @@ const incomeCategories: IncomeCategory[] = [
 
 const IncomeForm: React.FC<IncomeFormProps> = ({ onAddIncome }) => {
   const [amount, setAmount] = useState<string>("");
+  const [displayAmount, setDisplayAmount] = useState<string>("0.00");
   const [category, setCategory] = useState<IncomeCategory>("Salary");
   const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
+  const [isAmountFocused, setIsAmountFocused] = useState<boolean>(false);
+
+  // Animated amount display effect
+  useEffect(() => {
+    if (amount && isAmountFocused) {
+      const targetAmount = parseFloat(amount);
+      let current = 0;
+      const increment = targetAmount / 20; // Divide into 20 steps for animation
+      const animateValue = () => {
+        if (current < targetAmount) {
+          current += increment;
+          if (current > targetAmount) current = targetAmount;
+          setDisplayAmount(current.toFixed(2));
+          requestAnimationFrame(animateValue);
+        }
+      };
+      animateValue();
+    } else if (!isAmountFocused && amount) {
+      setDisplayAmount(parseFloat(amount).toFixed(2));
+    } else {
+      setDisplayAmount("0.00");
+    }
+  }, [amount, isAmountFocused]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +85,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ onAddIncome }) => {
     
     // Reset form
     setAmount("");
+    setDisplayAmount("0.00");
     setCategory("Salary");
     setDescription("");
     setDate(new Date());
@@ -98,17 +123,33 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ onAddIncome }) => {
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                     $
                   </span>
-                  <Input
-                    id="amount"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="pl-7"
-                    placeholder="0.00"
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="amount"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      onFocus={() => setIsAmountFocused(true)}
+                      onBlur={() => setIsAmountFocused(false)}
+                      className="pl-7 pr-[4.5rem]"
+                      placeholder="0.00"
+                      required
+                    />
+                    <AnimatePresence>
+                      {isAmountFocused && (
+                        <motion.div 
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 font-mono"
+                        >
+                          ${displayAmount}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
               </div>
               <div className="space-y-2">
@@ -159,6 +200,9 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ onAddIncome }) => {
                       selected={date}
                       onSelect={(date) => date && setDate(date)}
                       initialFocus
+                      captionLayout="dropdown-buttons"
+                      fromYear={2020}
+                      toYear={2030}
                     />
                   </PopoverContent>
                 </Popover>
@@ -172,9 +216,14 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ onAddIncome }) => {
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-finance-income hover:bg-finance-income/90">
-                Add Income
-              </Button>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button type="submit" className="bg-finance-income hover:bg-finance-income/90">
+                  Add Income
+                </Button>
+              </motion.div>
             </div>
           </form>
         </motion.div>
