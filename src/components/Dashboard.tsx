@@ -59,8 +59,8 @@ const Dashboard: React.FC = () => {
     saveExpenses(updatedExpenses);
   };
 
-  const handleAddIncome = (income: IncomeItem) => {
-    const updatedIncome = [...income, income];
+  const handleAddIncome = (newIncome: IncomeItem) => {
+    const updatedIncome = [...income, newIncome];
     setIncome(updatedIncome);
     saveIncome(updatedIncome);
   };
