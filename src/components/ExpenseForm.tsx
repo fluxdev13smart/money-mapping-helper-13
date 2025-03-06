@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,26 @@ import { cn } from "@/lib/utils";
 interface ExpenseFormProps {
   onAddExpense: (expense: ExpenseItem) => void;
 }
+
+// Default expense categories to use if none are in localStorage
+const defaultExpenseCategories: Category[] = [
+  "Housing",
+  "Transportation",
+  "Food",
+  "Utilities",
+  "Healthcare",
+  "Insurance",
+  "Entertainment",
+  "Shopping",
+  "Personal",
+  "Debt",
+  "Savings",
+  "Investments",
+  "Education",
+  "Gifts/Donations",
+  "Travel",
+  "Other",
+];
 
 // Get categories from localStorage or use defaults
 const getStoredCategories = (): Category[] => {
