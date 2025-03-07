@@ -43,56 +43,56 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ expenses, income, summary
     // Create a temporary div to render the report content
     const reportContainer = document.createElement("div");
     reportContainer.className = "pdf-report p-8 bg-white text-black";
-    reportContainer.style.width = "700px";
+    reportContainer.style.width = "595px"; // Standard A4 width in pixels (72dpi)
     reportContainer.style.position = "absolute";
     reportContainer.style.left = "-9999px";
     
-    // Generate the report content
+    // Generate the report content with adjusted styling for better fit
     reportContainer.innerHTML = `
-      <div style="font-family: Arial, sans-serif;">
-        <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 20px; text-align: center;">Financial Summary Report</h1>
-        <p style="text-align: center; font-size: 14px; margin-bottom: 30px;">Generated on ${new Date().toLocaleDateString()}</p>
+      <div style="font-family: Arial, sans-serif; max-width: 100%; font-size: 12px;">
+        <h1 style="font-size: 18px; font-weight: bold; margin-bottom: 10px; text-align: center;">Financial Summary Report</h1>
+        <p style="text-align: center; font-size: 12px; margin-bottom: 15px;">Generated on ${new Date().toLocaleDateString()}</p>
         
-        <div style="margin-bottom: 30px;">
-          <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">Overview</h2>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+        <div style="margin-bottom: 15px;">
+          <h2 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Overview</h2>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
             <span style="font-weight: bold;">Total Income:</span>
             <span>${formatCurrency(summary.totalIncome)}</span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
             <span style="font-weight: bold;">Total Expenses:</span>
             <span>${formatCurrency(summary.totalExpenses)}</span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
             <span style="font-weight: bold;">Balance:</span>
             <span>${formatCurrency(summary.balance)}</span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
             <span style="font-weight: bold;">Savings Rate:</span>
             <span>${formatPercentage(summary.savingsRate)}</span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
             <span style="font-weight: bold;">Largest Expense Category:</span>
             <span>${summary.largestExpenseCategory.category} (${formatPercentage(summary.largestExpenseCategory.percentage)})</span>
           </div>
         </div>
         
-        <div style="margin-bottom: 30px;">
-          <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">Expense Breakdown</h2>
-          <table style="width: 100%; border-collapse: collapse;">
+        <div style="margin-bottom: 15px;">
+          <h2 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Expense Breakdown</h2>
+          <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
             <thead>
               <tr style="background-color: #f1f5f9;">
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0;">Category</th>
-                <th style="text-align: right; padding: 8px; border-bottom: 1px solid #e2e8f0;">Amount</th>
-                <th style="text-align: right; padding: 8px; border-bottom: 1px solid #e2e8f0;">Percentage</th>
+                <th style="text-align: left; padding: 4px; border-bottom: 1px solid #e2e8f0;">Category</th>
+                <th style="text-align: right; padding: 4px; border-bottom: 1px solid #e2e8f0;">Amount</th>
+                <th style="text-align: right; padding: 4px; border-bottom: 1px solid #e2e8f0;">Percentage</th>
               </tr>
             </thead>
             <tbody>
               ${summary.expensesByCategory.map(category => `
                 <tr>
-                  <td style="text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0;">${category.category}</td>
-                  <td style="text-align: right; padding: 8px; border-bottom: 1px solid #e2e8f0;">${formatCurrency(category.amount)}</td>
-                  <td style="text-align: right; padding: 8px; border-bottom: 1px solid #e2e8f0;">${formatPercentage(category.percentage)}</td>
+                  <td style="text-align: left; padding: 4px; border-bottom: 1px solid #e2e8f0;">${category.category}</td>
+                  <td style="text-align: right; padding: 4px; border-bottom: 1px solid #e2e8f0;">${formatCurrency(category.amount)}</td>
+                  <td style="text-align: right; padding: 4px; border-bottom: 1px solid #e2e8f0;">${formatPercentage(category.percentage)}</td>
                 </tr>
               `).join("")}
             </tbody>
@@ -100,15 +100,15 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ expenses, income, summary
         </div>
         
         <div>
-          <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">Recent Transactions</h2>
-          <table style="width: 100%; border-collapse: collapse;">
+          <h2 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Recent Transactions</h2>
+          <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
             <thead>
               <tr style="background-color: #f1f5f9;">
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0;">Date</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0;">Type</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0;">Category</th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0;">Description</th>
-                <th style="text-align: right; padding: 8px; border-bottom: 1px solid #e2e8f0;">Amount</th>
+                <th style="text-align: left; padding: 4px; border-bottom: 1px solid #e2e8f0;">Date</th>
+                <th style="text-align: left; padding: 4px; border-bottom: 1px solid #e2e8f0;">Type</th>
+                <th style="text-align: left; padding: 4px; border-bottom: 1px solid #e2e8f0;">Category</th>
+                <th style="text-align: left; padding: 4px; border-bottom: 1px solid #e2e8f0;">Description</th>
+                <th style="text-align: right; padding: 4px; border-bottom: 1px solid #e2e8f0;">Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -129,11 +129,11 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ expenses, income, summary
                 .slice(0, 10)
                 .map(transaction => `
                   <tr>
-                    <td style="text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0;">${transaction.date.toLocaleDateString()}</td>
-                    <td style="text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0;">${transaction.type}</td>
-                    <td style="text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0;">${transaction.category}</td>
-                    <td style="text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0;">${transaction.description}</td>
-                    <td style="text-align: right; padding: 8px; border-bottom: 1px solid #e2e8f0; ${transaction.type === 'Income' ? 'color: #059669;' : 'color: #dc2626;'}">${formatCurrency(transaction.amount)}</td>
+                    <td style="text-align: left; padding: 4px; border-bottom: 1px solid #e2e8f0;">${new Date(transaction.date).toLocaleDateString()}</td>
+                    <td style="text-align: left; padding: 4px; border-bottom: 1px solid #e2e8f0;">${transaction.type}</td>
+                    <td style="text-align: left; padding: 4px; border-bottom: 1px solid #e2e8f0;">${transaction.category}</td>
+                    <td style="text-align: left; padding: 4px; border-bottom: 1px solid #e2e8f0;">${transaction.description}</td>
+                    <td style="text-align: right; padding: 4px; border-bottom: 1px solid #e2e8f0; ${transaction.type === 'Income' ? 'color: #059669;' : 'color: #dc2626;'}">${formatCurrency(transaction.amount)}</td>
                   </tr>
                 `).join("")}
             </tbody>
@@ -145,15 +145,34 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ expenses, income, summary
     document.body.appendChild(reportContainer);
     
     try {
-      const canvas = await html2canvas(reportContainer, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "px",
-        format: [canvas.width, canvas.height]
+      const canvas = await html2canvas(reportContainer, { 
+        scale: 1.5,
+        useCORS: true,
+        logging: false
       });
       
-      pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+      // Create PDF with A4 dimensions (210mm x 297mm)
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4"
+      });
+      
+      // Calculate proper scaling to fit the content onto A4
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      pdf.addImage(
+        canvas.toDataURL("image/png"), 
+        "PNG", 
+        0, 
+        0, 
+        imgWidth, 
+        imgHeight,
+        "",
+        "FAST"
+      );
+      
       pdf.save("financial_report.pdf");
       
       toast.success("PDF report exported successfully");
