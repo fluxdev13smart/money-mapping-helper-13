@@ -76,7 +76,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </motion.div>
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} "Where Did My Money Go?" Analyzer</p>
+        <p>
+          © {new Date().getFullYear()} "Where Did My Money Go?" Analyzer | Made by -Saeid Mohammad | <a 
+            href="https://discord.com/users/816551651695525908" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+          >
+            Discord
+          </a>
+        </p>
       </footer>
     </div>
   );
