@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Moon, Sun, Settings2, PlusCircle } from "lucide-react";
+import { Moon, Sun, Settings2, PlusCircle, Trash2 } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { Button } from "@/components/ui/button";
 import {
@@ -276,31 +276,16 @@ const Header: React.FC = () => {
                     className="flex items-center justify-between bg-muted/50 p-2 rounded-md"
                   >
                     <span className="truncate">{cat}</span>
-                    {(!defaultExpenseCategories.includes(cat) || cat === "Other") && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveExpenseCategory(cat)}
-                        className="h-7 w-7"
-                      >
-                        <span className="sr-only">Remove</span>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="h-4 w-4"
-                        >
-                          <path d="M18 6 6 18" />
-                          <path d="m6 6 12 12" />
-                        </svg>
-                      </Button>
-                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveExpenseCategory(cat)}
+                      className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
+                      disabled={defaultExpenseCategories.includes(cat) && cat !== "Other"}
+                    >
+                      <span className="sr-only">Remove</span>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -326,31 +311,16 @@ const Header: React.FC = () => {
                     className="flex items-center justify-between bg-muted/50 p-2 rounded-md"
                   >
                     <span className="truncate">{cat}</span>
-                    {(!defaultIncomeCategories.includes(cat) || cat === "Other") && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveIncomeCategory(cat)}
-                        className="h-7 w-7"
-                      >
-                        <span className="sr-only">Remove</span>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="h-4 w-4"
-                        >
-                          <path d="M18 6 6 18" />
-                          <path d="m6 6 12 12" />
-                        </svg>
-                      </Button>
-                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveIncomeCategory(cat)}
+                      className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
+                      disabled={defaultIncomeCategories.includes(cat) && cat !== "Other"}
+                    >
+                      <span className="sr-only">Remove</span>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 ))}
               </div>
