@@ -94,6 +94,29 @@
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-muted-foreground/30;
   }
+  
+  /* Scroll bounce animations */
+  @keyframes scrollBounceTop {
+    0% { transform: translateY(0); }
+    30% { transform: translateY(15px); }
+    60% { transform: translateY(5px); }
+    100% { transform: translateY(0); }
+  }
+  
+  @keyframes scrollBounceBottom {
+    0% { transform: translateY(0); }
+    30% { transform: translateY(-15px); }
+    60% { transform: translateY(-5px); }
+    100% { transform: translateY(0); }
+  }
+  
+  .scroll-bounce-top {
+    animation: scrollBounceTop 0.8s ease-in-out;
+  }
+  
+  .scroll-bounce-bottom {
+    animation: scrollBounceBottom 0.8s ease-in-out;
+  }
 }
 
 @layer components {
