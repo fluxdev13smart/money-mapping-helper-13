@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Moon, Sun, Settings } from "lucide-react";
+import { Moon, Sun, Settings2 } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { Button } from "@/components/ui/button";
 import {
@@ -130,7 +130,7 @@ const Header: React.FC = () => {
   ];
   
   return (
-    <header className="bg-background border-b">
+    <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50 transition-colors duration-200">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <h1 className="text-xl font-bold">
           💰 Finance Tracker
@@ -140,7 +140,7 @@ const Header: React.FC = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="rounded-full">
-                <Settings className="h-4 w-4" />
+                <Settings2 className="h-4 w-4" />
                 <span className="sr-only">Settings</span>
               </Button>
             </DropdownMenuTrigger>
@@ -154,7 +154,7 @@ const Header: React.FC = () => {
                 <span>Toggle {theme === "dark" ? "Light" : "Dark"} Mode</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setIsCategoryDialogOpen(true)}>
-                <Settings className="mr-2 h-4 w-4" />
+                <Settings2 className="mr-2 h-4 w-4" />
                 <span>Manage Categories</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
