@@ -31,8 +31,8 @@ const Advertisement: React.FC = () => {
         </div>
         <div className="flex-1">
           <img
-            src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
-            alt="Person tracking finances on laptop"
+            src="/lovable-uploads/7500ddde-17ee-40d7-b82d-c800de6aaf7e.png"
+            alt="Finance Dashboard Preview"
             className="rounded-xl shadow-lg w-full h-auto object-cover"
           />
         </div>
@@ -98,7 +98,7 @@ const Advertisement: React.FC = () => {
         </p>
         <div className="rounded-xl overflow-hidden shadow-xl border">
           <img
-            src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
+            src="/lovable-uploads/7500ddde-17ee-40d7-b82d-c800de6aaf7e.png"
             alt="Finance Dashboard Preview"
             className="w-full h-auto object-cover"
           />

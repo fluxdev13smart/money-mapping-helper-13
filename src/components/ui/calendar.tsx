@@ -86,8 +86,8 @@ function CustomCaption(props: React.PropsWithChildren<{
               whileTap={{ scale: 0.9 }}
               onClick={handlePreviousMonth}
               className={cn(
-                buttonVariants({ variant: "outline" }),
-                "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
+                buttonVariants({ variant: "ghost" }),
+                "h-7 w-7 p-0 opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
               )}
             >
               <ChevronLeft className="h-4 w-4" />
@@ -99,8 +99,8 @@ function CustomCaption(props: React.PropsWithChildren<{
               whileTap={{ scale: 0.9 }}
               onClick={handleNextMonth}
               className={cn(
-                buttonVariants({ variant: "outline" }),
-                "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
+                buttonVariants({ variant: "ghost" }),
+                "h-7 w-7 p-0 opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
               )}
             >
               <ChevronRight className="h-4 w-4" />
