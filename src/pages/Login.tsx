@@ -1,6 +1,6 @@
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,11 @@ import { PieChart, User, Lock, AtSign } from "lucide-react";
 import Layout from "@/components/Layout";
 
 const Login: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const defaultTab = queryParams.get('tab') === 'login' ? 'login' : 'signup';
+  
+  const [activeTab, setActiveTab] = useState<"login" | "signup">(defaultTab as "login" | "signup");
   const [isLoading, setIsLoading] = useState(false);
   
   // Login form state
