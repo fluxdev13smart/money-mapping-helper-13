@@ -2,15 +2,12 @@
 import React, { useEffect } from "react";
 import Header from "./Header";
 import { motion } from "framer-motion";
-import { useToast } from "@/hooks/use-toast";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { toast } = useToast();
-
   useEffect(() => {
     let lastScrollTop = 0;
     let isAnimating = false;
@@ -31,11 +28,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           document.documentElement.style.overflowY = "hidden";
           document.body.classList.add("scroll-bounce-bottom");
           
-          toast({
-            description: "You've reached the bottom of the page",
-            duration: 1500,
-          });
-          
           setTimeout(() => {
             document.documentElement.style.overflowY = "auto";
             document.body.classList.remove("scroll-bounce-bottom");
@@ -52,11 +44,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           // Apply the bounce animation at the top
           document.documentElement.style.overflowY = "hidden";
           document.body.classList.add("scroll-bounce-top");
-          
-          toast({
-            description: "You've reached the top of the page",
-            duration: 1500,
-          });
           
           setTimeout(() => {
             document.documentElement.style.overflowY = "auto";
