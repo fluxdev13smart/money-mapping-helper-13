@@ -24,7 +24,8 @@ interface IncomeFormProps {
   onAddIncome: (income: IncomeItem) => void;
 }
 
-const incomeCategories: IncomeCategory[] = [
+// Default income categories to use if none are in localStorage
+const defaultIncomeCategories: IncomeCategory[] = [
   "Salary",
   "Freelance",
   "Business",
@@ -32,6 +33,19 @@ const incomeCategories: IncomeCategory[] = [
   "Gifts",
   "Other",
 ];
+
+// Get income categories from localStorage or use defaults
+const getStoredIncomeCategories = (): IncomeCategory[] => {
+  try {
+    const storedCategories = localStorage.getItem("income-categories");
+    if (storedCategories) {
+      return JSON.parse(storedCategories);
+    }
+  } catch (error) {
+    console.error("Error loading income categories:", error);
+  }
+  return defaultIncomeCategories;
+};
 
 const incomeFrequencies: IncomeFrequency[] = [
   "Daily",
@@ -50,6 +64,14 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ onAddIncome }) => {
   const [date, setDate] = useState<Date>(new Date());
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [isAmountFocused, setIsAmountFocused] = useState<boolean>(false);
+  const [incomeCategories, setIncomeCategories] = useState<IncomeCategory[]>(getStoredIncomeCategories());
+
+  // Refresh categories on mount and when the form is opened
+  useEffect(() => {
+    if (isFormOpen) {
+      setIncomeCategories(getStoredIncomeCategories());
+    }
+  }, [isFormOpen]);
 
   // Animated amount display effect
   useEffect(() => {

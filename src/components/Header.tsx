@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Moon, Sun, Settings2 } from "lucide-react";
+import { Moon, Sun, Settings2, PlusCircle } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,17 +18,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Category } from "@/types/finance";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Category, IncomeCategory } from "@/types/finance";
 import { toast } from "sonner";
 
 const Header: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = React.useState<boolean>(false);
-  const [newCategory, setNewCategory] = React.useState<string>("");
-  const [expenseCategories, setExpenseCategories] = React.useState<Category[]>(getStoredCategories());
+  const [newExpenseCategory, setNewExpenseCategory] = React.useState<string>("");
+  const [newIncomeCategory, setNewIncomeCategory] = React.useState<string>("");
+  const [expenseCategories, setExpenseCategories] = React.useState<Category[]>(getStoredExpenseCategories());
+  const [incomeCategories, setIncomeCategories] = React.useState<IncomeCategory[]>(getStoredIncomeCategories());
+  const [activeTab, setActiveTab] = React.useState<string>("expense");
   
-  // Get categories from localStorage or use defaults
-  function getStoredCategories(): Category[] {
+  // Get expense categories from localStorage or use defaults
+  function getStoredExpenseCategories(): Category[] {
     const defaultExpenseCategories: Category[] = [
       "Housing",
       "Transportation",
@@ -54,17 +58,48 @@ const Header: React.FC = () => {
         return JSON.parse(storedCategories);
       }
     } catch (error) {
-      console.error("Error loading categories:", error);
+      console.error("Error loading expense categories:", error);
     }
     return defaultExpenseCategories;
   }
 
-  // Save categories to localStorage
-  const saveCategories = (categories: Category[]) => {
+  // Get income categories from localStorage or use defaults
+  function getStoredIncomeCategories(): IncomeCategory[] {
+    const defaultIncomeCategories: IncomeCategory[] = [
+      "Salary",
+      "Freelance",
+      "Business", 
+      "Investments",
+      "Gifts",
+      "Other",
+    ];
+    
+    try {
+      const storedCategories = localStorage.getItem("income-categories");
+      if (storedCategories) {
+        return JSON.parse(storedCategories);
+      }
+    } catch (error) {
+      console.error("Error loading income categories:", error);
+    }
+    return defaultIncomeCategories;
+  }
+
+  // Save expense categories to localStorage
+  const saveExpenseCategories = (categories: Category[]) => {
     try {
       localStorage.setItem("expense-categories", JSON.stringify(categories));
     } catch (error) {
-      console.error("Error saving categories:", error);
+      console.error("Error saving expense categories:", error);
+    }
+  };
+
+  // Save income categories to localStorage
+  const saveIncomeCategories = (categories: IncomeCategory[]) => {
+    try {
+      localStorage.setItem("income-categories", JSON.stringify(categories));
+    } catch (error) {
+      console.error("Error saving income categories:", error);
     }
   };
 
@@ -74,29 +109,47 @@ const Header: React.FC = () => {
     toast.success(`Switched to ${theme === "dark" ? "light" : "dark"} mode`);
   };
 
-  // Add new category
-  const handleAddCategory = () => {
-    if (!newCategory || newCategory.trim() === "") {
+  // Add new expense category
+  const handleAddExpenseCategory = () => {
+    if (!newExpenseCategory || newExpenseCategory.trim() === "") {
       toast.error("Please enter a category name");
       return;
     }
 
-    if (expenseCategories.includes(newCategory as Category)) {
+    if (expenseCategories.includes(newExpenseCategory as Category)) {
       toast.error("This category already exists");
       return;
     }
 
-    const updatedCategories = [...expenseCategories, newCategory as Category];
+    const updatedCategories = [...expenseCategories, newExpenseCategory as Category];
     setExpenseCategories(updatedCategories);
-    saveCategories(updatedCategories);
-    setNewCategory("");
-    toast.success(`Added category: ${newCategory}`);
-    setIsCategoryDialogOpen(false);
+    saveExpenseCategories(updatedCategories);
+    setNewExpenseCategory("");
+    toast.success(`Added expense category: ${newExpenseCategory}`);
   };
 
-  // Remove category
-  const handleRemoveCategory = (categoryToRemove: Category) => {
-    // Don't allow removing default categories
+  // Add new income category
+  const handleAddIncomeCategory = () => {
+    if (!newIncomeCategory || newIncomeCategory.trim() === "") {
+      toast.error("Please enter a category name");
+      return;
+    }
+
+    if (incomeCategories.includes(newIncomeCategory as IncomeCategory)) {
+      toast.error("This category already exists");
+      return;
+    }
+
+    const updatedCategories = [...incomeCategories, newIncomeCategory as IncomeCategory];
+    setIncomeCategories(updatedCategories);
+    saveIncomeCategories(updatedCategories);
+    setNewIncomeCategory("");
+    toast.success(`Added income category: ${newIncomeCategory}`);
+  };
+
+  // Remove expense category
+  const handleRemoveExpenseCategory = (categoryToRemove: Category) => {
+    // Don't allow removing default categories (except "Other")
     if (defaultExpenseCategories.includes(categoryToRemove) && 
         categoryToRemove !== "Other") {
       toast.error("Cannot remove default categories");
@@ -105,9 +158,25 @@ const Header: React.FC = () => {
 
     const updatedCategories = expenseCategories.filter(cat => cat !== categoryToRemove);
     setExpenseCategories(updatedCategories);
-    saveCategories(updatedCategories);
+    saveExpenseCategories(updatedCategories);
     
-    toast.success(`Removed category: ${categoryToRemove}`);
+    toast.success(`Removed expense category: ${categoryToRemove}`);
+  };
+
+  // Remove income category
+  const handleRemoveIncomeCategory = (categoryToRemove: IncomeCategory) => {
+    // Don't allow removing default categories (except "Other")
+    if (defaultIncomeCategories.includes(categoryToRemove) && 
+        categoryToRemove !== "Other") {
+      toast.error("Cannot remove default categories");
+      return;
+    }
+
+    const updatedCategories = incomeCategories.filter(cat => cat !== categoryToRemove);
+    setIncomeCategories(updatedCategories);
+    saveIncomeCategories(updatedCategories);
+    
+    toast.success(`Removed income category: ${categoryToRemove}`);
   };
 
   const defaultExpenseCategories: Category[] = [
@@ -126,6 +195,15 @@ const Header: React.FC = () => {
     "Education",
     "Gifts/Donations",
     "Travel",
+    "Other",
+  ];
+
+  const defaultIncomeCategories: IncomeCategory[] = [
+    "Salary",
+    "Freelance",
+    "Business",
+    "Investments",
+    "Gifts",
     "Other",
   ];
   
@@ -164,60 +242,120 @@ const Header: React.FC = () => {
       
       {/* Category Management Dialog */}
       <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Manage Expense Categories</DialogTitle>
+            <DialogTitle>Manage Categories</DialogTitle>
             <DialogDescription>
-              Add or remove expense categories to customize your tracking.
+              Add or remove categories to customize your tracking.
             </DialogDescription>
           </DialogHeader>
+          
+          <Tabs defaultValue="expense" value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="expense">Expense Categories</TabsTrigger>
+              <TabsTrigger value="income">Income Categories</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="expense" className="space-y-4 mt-4">
+              <div className="flex space-x-2">
+                <Input 
+                  placeholder="New expense category" 
+                  value={newExpenseCategory}
+                  onChange={(e) => setNewExpenseCategory(e.target.value)}
+                />
+                <Button onClick={handleAddExpenseCategory} type="button">
+                  <PlusCircle className="h-4 w-4 mr-1" />
+                  Add
+                </Button>
+              </div>
 
-          <div className="space-y-4 my-2">
-            <div className="flex space-x-2">
-              <Input 
-                placeholder="New category name" 
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-              />
-              <Button onClick={handleAddCategory} type="button">Add</Button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[300px] overflow-y-auto p-1">
-              {expenseCategories.map((cat) => (
-                <div
-                  key={cat}
-                  className="flex items-center justify-between bg-muted/50 p-2 rounded-md"
-                >
-                  <span className="truncate">{cat}</span>
-                  {(!defaultExpenseCategories.includes(cat) || cat === "Other") && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveCategory(cat)}
-                      className="h-7 w-7"
-                    >
-                      <span className="sr-only">Remove</span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="h-4 w-4"
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[300px] overflow-y-auto p-1">
+                {expenseCategories.map((cat) => (
+                  <div
+                    key={cat}
+                    className="flex items-center justify-between bg-muted/50 p-2 rounded-md"
+                  >
+                    <span className="truncate">{cat}</span>
+                    {(!defaultExpenseCategories.includes(cat) || cat === "Other") && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveExpenseCategory(cat)}
+                        className="h-7 w-7"
                       >
-                        <path d="M18 6 6 18" />
-                        <path d="m6 6 12 12" />
-                      </svg>
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+                        <span className="sr-only">Remove</span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-4 w-4"
+                        >
+                          <path d="M18 6 6 18" />
+                          <path d="m6 6 12 12" />
+                        </svg>
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="income" className="space-y-4 mt-4">
+              <div className="flex space-x-2">
+                <Input 
+                  placeholder="New income category" 
+                  value={newIncomeCategory}
+                  onChange={(e) => setNewIncomeCategory(e.target.value)}
+                />
+                <Button onClick={handleAddIncomeCategory} type="button">
+                  <PlusCircle className="h-4 w-4 mr-1" />
+                  Add
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[300px] overflow-y-auto p-1">
+                {incomeCategories.map((cat) => (
+                  <div
+                    key={cat}
+                    className="flex items-center justify-between bg-muted/50 p-2 rounded-md"
+                  >
+                    <span className="truncate">{cat}</span>
+                    {(!defaultIncomeCategories.includes(cat) || cat === "Other") && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveIncomeCategory(cat)}
+                        className="h-7 w-7"
+                      >
+                        <span className="sr-only">Remove</span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-4 w-4"
+                        >
+                          <path d="M18 6 6 18" />
+                          <path d="m6 6 12 12" />
+                        </svg>
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
 
           <DialogFooter>
             <Button onClick={() => setIsCategoryDialogOpen(false)}>Done</Button>

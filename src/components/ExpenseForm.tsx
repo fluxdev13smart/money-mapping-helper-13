@@ -56,15 +56,6 @@ const getStoredCategories = (): Category[] => {
   return defaultExpenseCategories;
 };
 
-// Save categories to localStorage
-const saveCategories = (categories: Category[]) => {
-  try {
-    localStorage.setItem("expense-categories", JSON.stringify(categories));
-  } catch (error) {
-    console.error("Error saving categories:", error);
-  }
-};
-
 const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense }) => {
   const [amount, setAmount] = useState<string>("");
   const [displayAmount, setDisplayAmount] = useState<string>("0.00");
@@ -75,6 +66,13 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense }) => {
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [isAmountFocused, setIsAmountFocused] = useState<boolean>(false);
   const [expenseCategories, setExpenseCategories] = useState<Category[]>(getStoredCategories());
+
+  // Refresh categories on mount and when the form is opened
+  useEffect(() => {
+    if (isFormOpen) {
+      setExpenseCategories(getStoredCategories());
+    }
+  }, [isFormOpen]);
 
   // Animated amount display effect
   useEffect(() => {
@@ -98,7 +96,6 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAddExpense }) => {
     }
   }, [amount, isAmountFocused]);
 
-  // Handle category change
   const handleCategoryChange = (value: string) => {
     setCategory(value as Category);
     if (value !== "Other") {

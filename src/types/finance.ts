@@ -16,7 +16,8 @@ export type Category =
   | "Education"
   | "Gifts/Donations"
   | "Travel"
-  | "Other";
+  | "Other"
+  | string;
 
 export type IncomeCategory =
   | "Salary"
@@ -24,7 +25,8 @@ export type IncomeCategory =
   | "Business"
   | "Investments"
   | "Gifts"
-  | "Other";
+  | "Other"
+  | string;
 
 export interface ExpenseItem {
   id: string;
