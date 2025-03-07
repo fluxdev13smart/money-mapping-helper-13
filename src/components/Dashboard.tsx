@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { FinancialSummary, ExpenseItem, IncomeItem } from "@/types/finance";
 import { calculateFinancialSummary, formatCurrency, formatPercentage } from "@/utils/calculations";
@@ -12,6 +11,7 @@ import {
   saveExpenses, 
   saveIncome 
 } from "@/utils/storage";
+import { useAuth } from "@/contexts/AuthContext";
 import IncomeForm from "./IncomeForm";
 import ExpenseForm from "./ExpenseForm";
 import Charts from "./Charts";
@@ -22,12 +22,12 @@ import { ArrowDown, ArrowUp, DollarSign, Percent, PiggyBank, Wallet } from "luci
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Dashboard: React.FC = () => {
+  const { user } = useAuth();
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
   const [income, setIncome] = useState<IncomeItem[]>([]);
   const [summary, setSummary] = useState<FinancialSummary | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
 
-  // Load data from local storage on initial load
   useEffect(() => {
     const loadedExpenses = loadExpenses();
     const loadedIncome = loadIncome();
@@ -36,7 +36,6 @@ const Dashboard: React.FC = () => {
     setIncome(loadedIncome);
   }, []);
 
-  // Update summary when expenses or income change
   useEffect(() => {
     const currentMonthExpenses = getCurrentMonthExpenses();
     const currentMonthIncome = getCurrentMonthIncome();
@@ -73,7 +72,16 @@ const Dashboard: React.FC = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <h1 className="text-3xl font-bold tracking-tight">Financial Dashboard</h1>
+          {user ? (
+            <>
+              <h2 className="text-lg font-medium text-muted-foreground">
+                Hello, {user.name}
+              </h2>
+              <h1 className="text-3xl font-bold tracking-tight">Financial Dashboard</h1>
+            </>
+          ) : (
+            <h1 className="text-3xl font-bold tracking-tight">Financial Dashboard</h1>
+          )}
           <p className="text-muted-foreground mt-1">
             Track, analyze, and understand your finances
           </p>

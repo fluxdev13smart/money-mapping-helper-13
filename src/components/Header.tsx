@@ -1,13 +1,15 @@
-
 import React from "react";
-import { Moon, Sun, Settings2, PlusCircle, Trash2, PieChart } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Moon, Sun, Settings2, PlusCircle, Trash2, PieChart, LogIn, LogOut, User } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
@@ -24,6 +26,8 @@ import { toast } from "sonner";
 
 const Header: React.FC = () => {
   const { theme, setTheme } = useTheme();
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = React.useState<boolean>(false);
   const [newExpenseCategory, setNewExpenseCategory] = React.useState<string>("");
   const [newIncomeCategory, setNewIncomeCategory] = React.useState<string>("");
@@ -31,7 +35,6 @@ const Header: React.FC = () => {
   const [incomeCategories, setIncomeCategories] = React.useState<IncomeCategory[]>(getStoredIncomeCategories());
   const [activeTab, setActiveTab] = React.useState<string>("expense");
   
-  // Get expense categories from localStorage or use defaults
   function getStoredExpenseCategories(): Category[] {
     const defaultExpenseCategories: Category[] = [
       "Housing",
@@ -63,12 +66,11 @@ const Header: React.FC = () => {
     return defaultExpenseCategories;
   }
 
-  // Get income categories from localStorage or use defaults
   function getStoredIncomeCategories(): IncomeCategory[] {
     const defaultIncomeCategories: IncomeCategory[] = [
       "Salary",
       "Freelance",
-      "Business", 
+      "Business",
       "Investments",
       "Gifts",
       "Other",
@@ -85,7 +87,6 @@ const Header: React.FC = () => {
     return defaultIncomeCategories;
   }
 
-  // Save expense categories to localStorage
   const saveExpenseCategories = (categories: Category[]) => {
     try {
       localStorage.setItem("expense-categories", JSON.stringify(categories));
@@ -94,7 +95,6 @@ const Header: React.FC = () => {
     }
   };
 
-  // Save income categories to localStorage
   const saveIncomeCategories = (categories: IncomeCategory[]) => {
     try {
       localStorage.setItem("income-categories", JSON.stringify(categories));
@@ -103,13 +103,11 @@ const Header: React.FC = () => {
     }
   };
 
-  // Toggle theme
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
     toast.success(`Switched to ${theme === "dark" ? "light" : "dark"} mode`);
   };
 
-  // Add new expense category
   const handleAddExpenseCategory = () => {
     if (!newExpenseCategory || newExpenseCategory.trim() === "") {
       toast.error("Please enter a category name");
@@ -128,7 +126,6 @@ const Header: React.FC = () => {
     toast.success(`Added expense category: ${newExpenseCategory}`);
   };
 
-  // Add new income category
   const handleAddIncomeCategory = () => {
     if (!newIncomeCategory || newIncomeCategory.trim() === "") {
       toast.error("Please enter a category name");
@@ -147,7 +144,6 @@ const Header: React.FC = () => {
     toast.success(`Added income category: ${newIncomeCategory}`);
   };
 
-  // Remove expense category
   const handleRemoveExpenseCategory = (categoryToRemove: Category) => {
     const updatedCategories = expenseCategories.filter(cat => cat !== categoryToRemove);
     setExpenseCategories(updatedCategories);
@@ -156,13 +152,18 @@ const Header: React.FC = () => {
     toast.success(`Removed expense category: ${categoryToRemove}`);
   };
 
-  // Remove income category
   const handleRemoveIncomeCategory = (categoryToRemove: IncomeCategory) => {
     const updatedCategories = incomeCategories.filter(cat => cat !== categoryToRemove);
     setIncomeCategories(updatedCategories);
     saveIncomeCategories(updatedCategories);
     
     toast.success(`Removed income category: ${categoryToRemove}`);
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully");
+    navigate("/");
   };
 
   const defaultExpenseCategories: Category[] = [
@@ -202,32 +203,48 @@ const Header: React.FC = () => {
         </h1>
         
         <div className="flex items-center space-x-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-full">
-                <Settings2 className="h-4 w-4" />
-                <span className="sr-only">Settings</span>
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="rounded-full">
+                  <User className="h-4 w-4 mr-2" />
+                  {user?.name.split(' ')[0]}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={toggleTheme}>
+                  {theme === "dark" ? (
+                    <Sun className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Moon className="mr-2 h-4 w-4" />
+                  )}
+                  <span>Toggle {theme === "dark" ? "Light" : "Dark"} Mode</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsCategoryDialogOpen(true)}>
+                  <Settings2 className="mr-2 h-4 w-4" />
+                  <span>Manage Categories</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" onClick={() => navigate("/login")}>
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign In
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={toggleTheme}>
-                {theme === "dark" ? (
-                  <Sun className="mr-2 h-4 w-4" />
-                ) : (
-                  <Moon className="mr-2 h-4 w-4" />
-                )}
-                <span>Toggle {theme === "dark" ? "Light" : "Dark"} Mode</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsCategoryDialogOpen(true)}>
-                <Settings2 className="mr-2 h-4 w-4" />
-                <span>Manage Categories</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       
-      {/* Category Management Dialog */}
       <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
