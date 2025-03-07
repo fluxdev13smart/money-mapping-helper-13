@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Moon, Sun, Settings2, PlusCircle, Trash2 } from "lucide-react";
+import { Moon, Sun, Settings2, PlusCircle, Trash2, PieChart } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { Button } from "@/components/ui/button";
 import {
@@ -149,13 +149,6 @@ const Header: React.FC = () => {
 
   // Remove expense category
   const handleRemoveExpenseCategory = (categoryToRemove: Category) => {
-    // Don't allow removing default categories (except "Other")
-    if (defaultExpenseCategories.includes(categoryToRemove) && 
-        categoryToRemove !== "Other") {
-      toast.error("Cannot remove default categories");
-      return;
-    }
-
     const updatedCategories = expenseCategories.filter(cat => cat !== categoryToRemove);
     setExpenseCategories(updatedCategories);
     saveExpenseCategories(updatedCategories);
@@ -165,13 +158,6 @@ const Header: React.FC = () => {
 
   // Remove income category
   const handleRemoveIncomeCategory = (categoryToRemove: IncomeCategory) => {
-    // Don't allow removing default categories (except "Other")
-    if (defaultIncomeCategories.includes(categoryToRemove) && 
-        categoryToRemove !== "Other") {
-      toast.error("Cannot remove default categories");
-      return;
-    }
-
     const updatedCategories = incomeCategories.filter(cat => cat !== categoryToRemove);
     setIncomeCategories(updatedCategories);
     saveIncomeCategories(updatedCategories);
@@ -210,8 +196,9 @@ const Header: React.FC = () => {
   return (
     <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50 transition-colors duration-200">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">
-          💰 Finance Tracker
+        <h1 className="text-xl font-bold flex items-center gap-2">
+          <PieChart className="h-5 w-5" />
+          Finance Tracker
         </h1>
         
         <div className="flex items-center space-x-2">
@@ -281,7 +268,6 @@ const Header: React.FC = () => {
                       size="icon"
                       onClick={() => handleRemoveExpenseCategory(cat)}
                       className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
-                      disabled={defaultExpenseCategories.includes(cat) && cat !== "Other"}
                     >
                       <span className="sr-only">Remove</span>
                       <Trash2 className="h-4 w-4" />
@@ -316,7 +302,6 @@ const Header: React.FC = () => {
                       size="icon"
                       onClick={() => handleRemoveIncomeCategory(cat)}
                       className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
-                      disabled={defaultIncomeCategories.includes(cat) && cat !== "Other"}
                     >
                       <span className="sr-only">Remove</span>
                       <Trash2 className="h-4 w-4" />
