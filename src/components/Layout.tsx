@@ -24,12 +24,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         if (!isAnimating && scrollTop > lastScrollTop) {
           isAnimating = true;
           
-          // Apply the bounce animation at the bottom
-          document.documentElement.style.overflowY = "hidden";
+          // Apply the bounce animation at the bottom without hiding overflow
           document.body.classList.add("scroll-bounce-bottom");
           
           setTimeout(() => {
-            document.documentElement.style.overflowY = "auto";
             document.body.classList.remove("scroll-bounce-bottom");
             isAnimating = false;
           }, 800);
@@ -41,12 +39,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         if (!isAnimating && scrollTop < lastScrollTop) {
           isAnimating = true;
           
-          // Apply the bounce animation at the top
-          document.documentElement.style.overflowY = "hidden";
+          // Apply the bounce animation at the top without hiding overflow
           document.body.classList.add("scroll-bounce-top");
           
           setTimeout(() => {
-            document.documentElement.style.overflowY = "auto";
             document.body.classList.remove("scroll-bounce-top");
             isAnimating = false;
           }, 800);
